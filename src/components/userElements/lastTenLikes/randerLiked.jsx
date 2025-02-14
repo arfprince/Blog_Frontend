@@ -7,9 +7,9 @@ function RanderLiked({ blog }) {
   return (
     <div className="bg-gray-100 p-6 rounded-lg shadow-md mt-6 hover:bg-gray-200 transition duration-300">
       {/* Blog Image */}
-      {blog.image && (
+      {blog.imageUrl && (
         <img
-          src={blog.image}
+          src={blog.imageUrl}
           alt={blog.title}
           className="w-full h-48 object-cover rounded-lg mb-4 shadow-sm"
         />
@@ -21,7 +21,7 @@ function RanderLiked({ blog }) {
       {/* Author and Status */}
       <div className="flex justify-between text-sm text-gray-600 mt-2">
         <span>
-          By <span className="font-medium text-gray-700">{blog.author}</span>
+          By <span className="font-medium text-gray-700">{blog.username}</span>
         </span>
         <span
           className={`px-3 py-1 text-xs rounded-full font-medium ${
@@ -47,9 +47,9 @@ function RanderLiked({ blog }) {
 
       {/* Time and Read Time */}
       <div className="flex justify-between text-sm text-gray-500 mt-4">
-        <span>{new Date(blog.time).toLocaleString()}</span>
+        <span>{new Date(blog.createdAt).toLocaleString()}</span>
         <span>
-          <ReactTimeAgo date={new Date(blog.time)} locale="en-US" />
+          <ReactTimeAgo date={new Date(blog.createdAt)} locale="en-US" />
         </span>
         <span>⏳ {blog.readTime} mins read</span>
       </div>

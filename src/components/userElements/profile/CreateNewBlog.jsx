@@ -20,7 +20,7 @@ export default function CreateNewBlog() {
     status: "",
   });
   const user = useSelector((state) => state.auth.currentSessionUser);
-  
+
   const validateField = (name, value) => {
     let error = "";
     switch (name) {
@@ -92,29 +92,17 @@ export default function CreateNewBlog() {
     if (Object.values(newErrors).some((error) => error !== "")) {
       return;
     }
-
-    // const currentSessionUser = JSON.parse(
-    //   localStorage.getItem("currentSessionUser")
-    // );
-    
-    // const updatedBlogs = {...blogs };
-    // let currentSessionUserBlogs = updatedBlogs[currentSessionUser] || [];
-    // currentSessionUserBlogs = [...currentSessionUserBlogs, newBlog];
-    // updatedBlogs[currentSessionUser] = currentSessionUserBlogs;
-    // dispatch(setBlogs(updatedBlogs));
     let payload = {
-      title,
-      author: user.username,
+      title: title,
+      username: user.username,
       content,
-      time: new Date().toISOString(),
-      image,
+      imageUrl: image,
       likeCount: 0,
       readTime,
       status,
-      id: user.id,
+      userId: user.id,
     };
-    console.log("from frontend->>" , payload);
-    
+
     try {
       const response = await fetch("http://localhost:3333/blog/create_blog", {
         method: "POST",
@@ -126,9 +114,20 @@ export default function CreateNewBlog() {
       });
 
       const data = await response.json();
+
       if (response.ok) {
-        // dispatch(login(data.user));
-        alert(data.message);
+        setTitle("");
+        setContent("");
+        setImage("");
+        setStatus("");
+        setReadTime("");
+        setValidationErrors({
+          title: "",
+          content: "",
+          image: "",
+          readTime: "",
+          status: "",
+        });
         navigate("/profile");
       } else {
         throw new Error(data.message);
@@ -136,20 +135,6 @@ export default function CreateNewBlog() {
     } catch (error) {
       alert(error.message);
     }
-
-    setTitle("");
-    setContent("");
-    setImage("");
-    setStatus("");
-    setReadTime("");
-    setValidationErrors({
-      title: "",
-      content: "",
-      image: "",
-      readTime: "",
-      status: "",
-    });
-    navigate("/profile");
   };
 
   return (

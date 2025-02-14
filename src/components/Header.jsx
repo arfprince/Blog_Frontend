@@ -20,6 +20,7 @@ export default function Header() {
       if (response.ok) {
         dispatch(logout());
         alert("Logout successful!");
+        navigate("/login");
       } else {
         alert(data.message);
         throw new Error(data.message);
@@ -27,10 +28,6 @@ export default function Header() {
     } catch (error) {
       alert(error.message);
     }
-    // dispatch(logout());
-    // localStorage.removeItem("currentSessionUser");
-    // localStorage.setItem("isLoggedIn", false);
-    // navigate("/login");
   };
 
   const currentSessionUser =

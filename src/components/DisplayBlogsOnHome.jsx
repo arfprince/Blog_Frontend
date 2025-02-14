@@ -2,49 +2,23 @@ import React, { useState, useEffect } from "react";
 import ReactTimeAgo from "react-time-ago";
 import { Link } from "react-router-dom";
 import {
-  setAllUsersFavouriteBlogs,
-  setAllUsersLikedBlogs,
-  setBlogs,
   setSingleDetailedBlog,
 } from "../redux/rootSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-function DisplayBlogsOnHome({ blog }) {
-  const dispatch = useDispatch();
+function DisplayBlogsOnHome({ blog ,userFavourites, userLikedBlogs}) {
+  
   const [isFavourite, setIsFavourite] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-
-  const currentSessionUser = useSelector(
-    (state) => state.auth.currentSessionUser
-  );
-  const allUsersFavouriteBlogs = useSelector(
-    (state) => state.rootSlice.allUsersFavouriteBlogs
-  );
-  const allUsersLikedBlogs = useSelector(
-    (state) => state.rootSlice.allUsersLikedBlogs
-  );
-  const blogs = useSelector((state) => state.rootSlice.blogs);
-
+  const currentSessionUser= useSelector((state)=> state.auth.currentSessionUser);
+  
   useEffect(() => {
-    const userFavourites = allUsersFavouriteBlogs[currentSessionUser] || [];
     setIsFavourite(userFavourites.some((fav) => fav.id === blog.id));
 
-    const userLikedBlogs = allUsersLikedBlogs[currentSessionUser] || [];
-    setIsLiked(userLikedBlogs.some((liked) => liked.id === blog.id));
-  }, [allUsersFavouriteBlogs, allUsersLikedBlogs, blog.id, currentSessionUser]);
+    // setIsLiked(userLikedBlogs.some((liked) => liked.id === blog.id));
+  }, [isLiked, isFavourite, blog.id, currentSessionUser]);
 
   const toggleFavourite = () => {
-    let userFavourites = allUsersFavouriteBlogs[currentSessionUser] || [];
-    if (isFavourite) {
-      userFavourites = userFavourites.filter((fav) => fav.id !== blog.id);
-    } else {
-      userFavourites = [...userFavourites, blog];
-    }
-    const updatedFavourites = {
-      ...allUsersFavouriteBlogs,
-      [currentSessionUser]: userFavourites,
-    };
-    dispatch(setAllUsersFavouriteBlogs(updatedFavourites));
     setIsFavourite(!isFavourite);
   };
 
@@ -53,35 +27,68 @@ function DisplayBlogsOnHome({ blog }) {
       ...blog,
       likeCount: isLiked ? blog.likeCount - 1 : blog.likeCount + 1,
     };
-
-    let userLikedBlogs = allUsersLikedBlogs[currentSessionUser] || [];
-    if (isLiked) {
-      userLikedBlogs = userLikedBlogs.filter((liked) => liked.id !== blog.id);
-    } else {
-      userLikedBlogs = [...userLikedBlogs, updatedCurrentBlog];
-    }
-
-    let likedBloggerBlogs = blogs[blog.userName] || [];
-    let updatedLikedBloggerBlogs = likedBloggerBlogs.map((b) =>
-      b.id === blog.id ? updatedCurrentBlog : b
-    );
-
-    dispatch(setBlogs({ ...blogs, [blog.userName]: updatedLikedBloggerBlogs }));
-
-    const updatedLikedBlogs = {
-      ...allUsersLikedBlogs,
-      [currentSessionUser]: userLikedBlogs,
-    };
-    dispatch(setAllUsersLikedBlogs(updatedLikedBlogs));
-
     setIsLiked(!isLiked);
   };
 
+  useEffect(() => {   
+    if(isFavourite){
+      const addToFavourite = async () => {
+        try {
+          const response = await fetch(
+            "http://localhost:3333/blog/add_to_favourite",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ blog_id: blog.id, user_id: currentSessionUser.id}),
+              credentials: "include",
+            }
+          );
+  
+          const data = await response.json(); 
+          
+          if (response.ok) {
+            alert(data.message);
+          }
+        } catch (error) {
+          alert(error.message);
+        }
+      };
+      addToFavourite();
+    }else{
+      const removeFromFavourite = async () => {
+        try {
+          const response = await fetch(
+            "http://localhost:3333/blog/add_to_favourite",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ blog_id: blog.id, user_id: currentSessionUser.id}),
+              credentials: "include",
+            }
+          );
+  
+          const data = await response.json(); 
+          
+          if (response.ok) {
+            alert(data.message);
+          }
+        } catch (error) {
+          alert(error.message);
+        }
+      };
+      removeFromFavourite();
+    }
+  }, [setIsFavourite]);
+  
   return (
     <div className="bg-gray-100 p-6 rounded-xl shadow-md mt-6 hover:bg-gray-200 transition duration-300">
-      {blog.image && (
+      {blog.imageUrl && (
         <img
-          src={blog.image}
+          src={blog.imageUrl}
           alt={blog.title}
           className="w-full h-48 object-cover rounded-lg mb-4 shadow-sm"
         />
@@ -91,7 +98,7 @@ function DisplayBlogsOnHome({ blog }) {
 
       <div className="flex justify-between text-sm text-gray-500 mt-2">
         <span>
-          By <span className="font-medium text-gray-700">{blog.author}</span>
+          By <span className="font-medium text-gray-700">{blog.username}</span>
         </span>
         <span
           className={`px-3 py-1 text-xs rounded-full font-medium ${
@@ -120,9 +127,9 @@ function DisplayBlogsOnHome({ blog }) {
       </Link>
 
       <div className="flex justify-between text-sm text-gray-500 mt-4">
-        <span>{new Date(blog.time).toLocaleString()}</span>
+        <span>{new Date(blog.createdAt).toLocaleString()}</span>
         <span>
-          <ReactTimeAgo date={new Date(blog.time)} locale="en-US" />
+          <ReactTimeAgo date={new Date(blog.createdAt)} locale="en-US" />
         </span>
         <span>⏳ {blog.readTime} mins read</span>
       </div>

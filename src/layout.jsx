@@ -3,10 +3,11 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { login } from "./redux/authSlice";
+import { login} from "./redux/authSlice";
 
 export default function Layout() {
-  const dispatch= useDispatch();
+  const dispatch = useDispatch();
+
   const checkLoggedIn = async () => {
     try {
       const response = await fetch("http://localhost:3333/blog/is-logged-user", {
@@ -27,7 +28,6 @@ export default function Layout() {
       console.log(error.message);
     }
   } 
-
   useEffect(() => {
     checkLoggedIn();
   }, []);

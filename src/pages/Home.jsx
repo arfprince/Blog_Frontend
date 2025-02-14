@@ -1,16 +1,88 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DisplayBlogsOnHome from "../components/DisplayBlogsOnHome";
 import { useSelector } from "react-redux";
 
 export default function Home() {
-  const  blogs = JSON.parse(JSON.stringify(useSelector((state)=> state.rootSlice.blogs)));
-  
+  const [allPublicBlogs, setAllPublicBlogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [userFavourites, setUserFavourites] = useState([]);
+  const [userLikedBlogs, setUserLikedBlogs] = useState([]);
+  const currentSessionUser = useSelector(
+    (state) => state.auth.currentSessionUser
+  );
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch("http://localhost:3333/blog/get_blogs", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "include",
+        });
+  
+        const data = await response.json();
+        if (response.ok) {
+          setAllPublicBlogs(data);
+        }
+      } catch (error) {}
+    };
+    fetchBlogs();
+  }, [])
+  
 
-  const allPublicBlogs = Object.values(blogs)
-    .flat()
-    .filter((blog) => blog.status === "public");
+  useEffect(() => {
+    const getUserFavourites = async () => {
+      if (!currentSessionUser?.id) {
+        return;
+      }
 
+      const payload = { user_id: currentSessionUser.id };
+      try {
+        const response = await fetch(
+          "http://localhost:3333/blog/get_user_favourite_blogs",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(payload),
+          }
+        );
+        const data = await response.json();
+        if (response.ok) {
+          setUserFavourites(data);
+        }
+      } catch (error) {
+        console.error("Full error:", error);
+      }
+    };
+    getUserFavourites();
+    // const getUserLikedBlogs = async () => {
+    //   try {
+    //     const response = await fetch(
+    //       "http://localhost:3333/blog/get_user_liked_blogs",
+    //       {
+    //         method: "POST",
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({ user_id: currentSessionUser.id }),
+    //         credentials: "include",
+    //       }
+    //     );
+    //     const data = await response.json();
+    //     if (response.ok) {
+    //       userLikedBlogs = data;
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching user liked blogs:", error);
+    //   }
+    // }
+    // getUserLikedBlogs();
+  }, [currentSessionUser]);
+  
   return (
     <div className="text-center mt-10 px-4">
       {/* Header */}
@@ -50,7 +122,12 @@ export default function Home() {
               {allPublicBlogs
                 .filter((blog) => blog.title.toLowerCase().includes(searchTerm))
                 .map((blog, index) => (
-                  <DisplayBlogsOnHome blog={blog} key={blog.id || index} />
+                  <DisplayBlogsOnHome
+                    blog={blog}
+                    key={blog.id || index}
+                    userFavourites={userFavourites}
+                    userLikedBlogs={userLikedBlogs}
+                  />
                 ))}
             </div>
           )}
@@ -68,7 +145,12 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {allPublicBlogs.map((blog, index) => (
-                <DisplayBlogsOnHome blog={blog} key={blog.id || index} />
+                <DisplayBlogsOnHome
+                  blog={blog}
+                  key={blog.id || index}
+                  userFavourites={userFavourites}
+                  userLikedBlogs={userLikedBlogs}
+                />
               ))}
             </div>
           )}

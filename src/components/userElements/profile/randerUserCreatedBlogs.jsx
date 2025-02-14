@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
 import { useDispatch, useSelector } from "react-redux";
-import { setAllUsersFavouriteBlogs, setAllUsersLikedBlogs, setBlogs } from "../../../redux/rootSlice";
+import {
+  setAllUsersFavouriteBlogs,
+  setAllUsersLikedBlogs,
+  setBlogs,
+} from "../../../redux/rootSlice";
 
 export default function RanderUserCreatedBlogs({
   blog,
@@ -18,38 +22,50 @@ export default function RanderUserCreatedBlogs({
   const [validationErrors, setValidationErrors] = useState({
     title: "",
     image: "",
-    content: ""
+    content: "",
   });
+
   const dispatch = useDispatch();
-  const allBlogs = JSON.parse(JSON.stringify(useSelector((state)=> state.rootSlice.blogs)));
-  let updatedAllUsersFavouriteBlogs = { ...useSelector((state)=>state.rootSlice.allUsersFavouriteBlogs)};
-  let updatedAllUsersLikedBlogs = { ...useSelector((state)=>state.rootSlice.allUsersLikedBlogs) };
-  let currentSessionUser = useSelector((state)=>state.auth.currentSessionUser);
+  const allBlogs = JSON.parse(
+    JSON.stringify(useSelector((state) => state.rootSlice.blogs))
+  );
+  let updatedAllUsersFavouriteBlogs = {
+    ...useSelector((state) => state.rootSlice.allUsersFavouriteBlogs),
+  };
+  let updatedAllUsersLikedBlogs = {
+    ...useSelector((state) => state.rootSlice.allUsersLikedBlogs),
+  };
+  let currentSessionUser = useSelector(
+    (state) => state.auth.currentSessionUser
+  );
+  
+  useEffect(() => {
+    const updateBlogStatus = async () => {
+      try {
+        const response = await fetch("http://localhost:3333/blog/update_blog_status", {
+          method: "POST",
+          headers: {
+            'Content-Type': "application/json",
+          },
+          body: JSON.stringify({id:blog.id,status: status }),
+          credentials: "include",
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error);
+        }
+      } catch (error) {
+        alert(error);
+      }
+    };
+
+    updateBlogStatus();
+  }, [status]);
+
   const toggleStatus = () => {
     const newStatus = status === "public" ? "private" : "public";
     setStatus(newStatus);
-    
-    if (allBlogs[currentSessionUser]) {
-      allBlogs[currentSessionUser] = allBlogs[currentSessionUser].map((b) =>
-        b.id === blog.id ? { ...b, status: newStatus } : b
-      );
-      dispatch(setBlogs(allBlogs));
-    }
-    
-    for (let user in updatedAllUsersFavouriteBlogs) {
-      let perUserBlogs = updatedAllUsersFavouriteBlogs[user];
-      perUserBlogs = perUserBlogs.filter((b) => b.id !== blog.id);
-      updatedAllUsersFavouriteBlogs[user] = perUserBlogs;
-    }
-    dispatch(setAllUsersFavouriteBlogs(updatedAllUsersFavouriteBlogs));
-
-    // Update users' liked blogs
-    for (let user in updatedAllUsersLikedBlogs) {
-      let perUserBlogs = updatedAllUsersLikedBlogs[user];
-      perUserBlogs = perUserBlogs.filter((b) => b.id !== blog.id);
-      updatedAllUsersLikedBlogs[user] = perUserBlogs;
-    }
-    dispatch(setAllUsersLikedBlogs(updatedAllUsersLikedBlogs));
   };
 
   const validateField = (name, value) => {
@@ -64,7 +80,7 @@ export default function RanderUserCreatedBlogs({
           error = "Title must be less than 100 characters";
         }
         break;
-      case "image":
+      case "imageUrl":
         if (value.trim() && !value.match(/^(http|https):\/\/[^ "]+$/)) {
           error = "Please enter a valid image URL";
         }
@@ -88,20 +104,20 @@ export default function RanderUserCreatedBlogs({
     const { name, value } = e.target;
     setEditedBlog({ ...editedBlog, [name]: value });
     const error = validateField(name, value);
-    setValidationErrors(prev => ({ ...prev, [name]: error }));
+    setValidationErrors((prev) => ({ ...prev, [name]: error }));
   };
 
   const handleSave = () => {
     const newErrors = {
       title: validateField("title", editedBlog.title),
-      image: validateField("image", editedBlog.image),
-      content: validateField("content", editedBlog.content)
+      imageUrl: validateField("image", editedBlog.imageUrl),
+      content: validateField("content", editedBlog.content),
     };
 
     setValidationErrors(newErrors);
 
     // Check if there are any errors
-    if (Object.values(newErrors).some(error => error !== "")) {
+    if (Object.values(newErrors).some((error) => error !== "")) {
       return;
     }
 
@@ -114,9 +130,9 @@ export default function RanderUserCreatedBlogs({
       {/* Blog Card */}
       <div className="bg-white p-6 rounded-xl shadow-lg transition-transform duration-300 hover:scale-[1.02]">
         {/* Blog Image */}
-        {blog.image && (
+        {blog.imageUrl && (
           <img
-            src={blog.image}
+            src={blog.imageUrl}
             alt={blog.title}
             className="w-full h-52 object-cover rounded-lg mb-4"
           />
@@ -128,7 +144,8 @@ export default function RanderUserCreatedBlogs({
         {/* Author & Status */}
         <div className="flex justify-between text-sm text-gray-500 mt-2">
           <span>
-            By <span className="font-medium text-gray-700">{blog.author}</span>
+            By{" "}
+            <span className="font-medium text-gray-700">{blog.username}</span>
           </span>
           <button
             onClick={toggleStatus}
@@ -155,9 +172,9 @@ export default function RanderUserCreatedBlogs({
 
         {/* Time & Read Time */}
         <div className="flex justify-between text-sm text-gray-500 mt-4">
-          <span>{new Date(blog.time).toLocaleString()}</span>
+          <span>{new Date(blog.createdAt).toLocaleString()}</span>
           <span>
-            <ReactTimeAgo date={new Date(blog.time)} locale="en-US" />
+            <ReactTimeAgo date={new Date(blog.createdAt)} locale="en-US" />
           </span>
           <span>⏳ {blog.readTime} mins read</span>
         </div>
@@ -214,11 +231,13 @@ export default function RanderUserCreatedBlogs({
                 value={editedBlog.title}
                 onChange={handleInputChange}
                 className={`w-full p-2 border rounded-md mt-1 focus:ring focus:ring-blue-200 ${
-                  validationErrors.title ? 'border-red-500' : ''
+                  validationErrors.title ? "border-red-500" : ""
                 }`}
               />
               {validationErrors.title && (
-                <p className="text-red-500 text-sm mt-1">{validationErrors.title}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {validationErrors.title}
+                </p>
               )}
             </div>
 
@@ -230,14 +249,16 @@ export default function RanderUserCreatedBlogs({
               <input
                 type="text"
                 name="image"
-                value={editedBlog.image}
+                value={editedBlog.imageUrl}
                 onChange={handleInputChange}
                 className={`w-full p-2 border rounded-md mt-1 focus:ring focus:ring-blue-200 ${
-                  validationErrors.image ? 'border-red-500' : ''
+                  validationErrors.image ? "border-red-500" : ""
                 }`}
               />
               {validationErrors.image && (
-                <p className="text-red-500 text-sm mt-1">{validationErrors.image}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {validationErrors.image}
+                </p>
               )}
             </div>
 
@@ -251,11 +272,13 @@ export default function RanderUserCreatedBlogs({
                 value={editedBlog.content}
                 onChange={handleInputChange}
                 className={`w-full p-2 border rounded-md mt-1 h-28 focus:ring focus:ring-blue-200 ${
-                  validationErrors.content ? 'border-red-500' : ''
+                  validationErrors.content ? "border-red-500" : ""
                 }`}
               />
               {validationErrors.content && (
-                <p className="text-red-500 text-sm mt-1">{validationErrors.content}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {validationErrors.content}
+                </p>
               )}
             </div>
 

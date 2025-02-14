@@ -4,7 +4,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   
-    blogs: JSON.parse(localStorage.getItem("blogs")) || {},
+    blogs: [],
     singleDetailedBlog: {},
     allUsersFavouriteBlogs: JSON.parse(localStorage.getItem("allUsersFavouriteBlogs")) || {},
     allUsersLikedBlogs: JSON.parse(localStorage.getItem("allUsersLikedBlogs")) || {},

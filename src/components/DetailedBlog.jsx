@@ -9,7 +9,7 @@ function DetailedBlog() {
         return <div className="text-center text-lg text-gray-600">Blog not found</div>;
     }
 
-    const { title, content, readTime, image, status, likeCount, author, time } = singleDetailedBlog;
+    const { title, content, readTime, imageUrl, status, likeCount, username, createdAt } = singleDetailedBlog;
 
     return (
         <div className="container mx-auto px-6 py-12">
@@ -24,9 +24,9 @@ function DetailedBlog() {
                 <h1 className="text-3xl font-extrabold text-gray-800 mb-6">{title}</h1>
                 
                 <div className="flex space-x-6 mb-6 text-sm text-gray-500">
-                    <span>{new Date(time).toLocaleString()}</span>
+                    <span>{new Date(createdAt).toLocaleString()}</span>
                     <span>
-                        <ReactTimeAgo date={new Date(time)} locale="en-US" />
+                        <ReactTimeAgo date={new Date(createdAt)} locale="en-US" />
                     </span>
                     <span>⏳ {readTime} mins read</span>
                 </div>
@@ -37,12 +37,12 @@ function DetailedBlog() {
                     <span className="font-medium text-gray-700">Likes:</span>
                     <span>{likeCount}</span>
                     <span className="font-medium text-gray-700">Author:</span>
-                    <span>{author}</span>
+                    <span>{username}</span>
                 </div>
 
                 <div className="relative mb-8">
                     <img
-                        src={image}
+                        src={imageUrl}
                         alt={title}
                         className="w-full h-96 object-cover rounded-lg shadow-lg transition-all duration-500 transform hover:scale-105"
                     />
