@@ -1,37 +1,110 @@
 import RanderFavourites from "../components/userElements/favourites/randerFavourites";
 import { useEffect, useState } from "react";
-import { setAllUsersFavouriteBlogs } from "../redux/rootSlice";
 import { useDispatch, useSelector } from "react-redux";
 export default function Favourites() {
   const dispatch = useDispatch();
-  const allUsersFavouriteBlogs = useSelector((state)=> state.rootSlice.allUsersFavouriteBlogs);
-  const currentSessionUser = JSON.parse(
-    localStorage.getItem("currentSessionUser")
-  );
   const [removeFavourite, setRemoveFavourite] = useState(false);
   const [deletedFavBlogId, setDeletedFavBlogId] = useState("");
+  const [userFavBlogs, setUserFavBlogs] = useState([]);
+  const currentSessionUser = useSelector(
+    (state) => state.auth.currentSessionUser
+  );
+
   useEffect(() => {
-    let userFavourites = allUsersFavouriteBlogs[currentSessionUser] || [];
-    userFavourites = userFavourites.filter(
-      (fav) => fav.id !== deletedFavBlogId
-    );
-    const updatedFavourites = {
-      ...allUsersFavouriteBlogs,
-      [currentSessionUser]: userFavourites,
+    const getUserFavourites = async () => {
+      if (!currentSessionUser.id) return;
+      try {
+        const response = await fetch(
+          "http://localhost:3333/blog/get_favourites",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ user_id: currentSessionUser.id }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUserFavBlogs(data);
+        }
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
     };
-    dispatch(setAllUsersFavouriteBlogs(updatedFavourites));
-    
-    setRemoveFavourite(false);
-    setDeletedFavBlogId("");
+
+    getUserFavourites();
+  }, []);
+
+  useEffect(() => {
+    const removeFromFavourites = async () => {
+      if (removeFavourite) {
+        try {
+          const response = await fetch(
+            "http://localhost:3333/blog/remove_from_favourite",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                blog_id: deletedFavBlogId,
+                user_id: currentSessionUser.id,
+              }),
+              credentials: "include",
+            }
+          );
+
+          const data = await response.json();
+
+          if (response.ok) {
+            setRemoveFavourite(false);
+            setDeletedFavBlogId("");
+          }
+        } catch (error) {
+          console.log(error.message);
+        }
+      }
+    };
+
+    removeFromFavourites();
+    const getUserFavourites = async () => {
+      if (!currentSessionUser.id) return;
+      try {
+        const response = await fetch(
+          "http://localhost:3333/blog/get_favourites",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ user_id: currentSessionUser.id }),
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUserFavBlogs(data);
+        }
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    };
+
+    getUserFavourites();
   }, [removeFavourite, deletedFavBlogId]);
+  
   return (
     <div className="w-2/3 mx-auto bg-white p-6 rounded-xl shadow-lg">
       <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">
         My Favourite Blogs
       </h2>
 
-      {allUsersFavouriteBlogs[currentSessionUser]?.length > 0 ? (
-        allUsersFavouriteBlogs[currentSessionUser].map((blog, index) => (
+      {userFavBlogs?.length > 0 ? (
+        userFavBlogs.map((blog, index) => (
           <RanderFavourites
             blog={blog}
             key={index}

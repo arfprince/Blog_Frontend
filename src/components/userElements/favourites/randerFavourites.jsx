@@ -3,11 +3,12 @@ import ReactTimeAgo from "react-time-ago";
 
 function RanderFavourites({ blog, setRemoveFavourite, setDeletedFavBlogId }) {
   const [showMore, setShowMore] = useState(false);
+  console.log(blog);
   
   return (
     <div className="bg-gray-100 p-6 rounded-lg shadow-md mt-6 hover:bg-gray-200 transition duration-300">
       {/* Blog Image */}
-      {blog.image && (
+      {blog.imageUrl && (
         <img
           src={blog.imageUrl}
           alt={blog.title}
@@ -36,13 +37,13 @@ function RanderFavourites({ blog, setRemoveFavourite, setDeletedFavBlogId }) {
 
       {/* Content Preview with "Show More" Toggle */}
       <p className="text-gray-700 mt-4 leading-relaxed">
-        {showMore ? blog.content : `${blog.content.substring(0, 100)}...`}
+        {showMore ? blog.content : blog.content}
       </p>
       <button
         onClick={() => setShowMore(!showMore)}
         className="text-blue-500 mt-2 font-medium hover:underline"
       >
-        {showMore ? "Show Less" : "Show More"}
+        {showMore ? blog.content : `${blog.content.substring(0, 100)}...`}
       </button>
 
       {/* Time and Read Time */}

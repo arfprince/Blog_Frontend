@@ -1,22 +1,41 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import RanderLiked from "../components/userElements/lastTenLikes/randerLiked";
+import { useEffect, useState } from "react";
 export default function LastTenLikes() {
   const dispatch= useDispatch();
-  let userLastTenLikedBlogs = [];
-  const currentSessionUser = JSON.parse(
-    localStorage.getItem("currentSessionUser")
-  );
-  const allUsersLikedBlogs = useSelector((state)=> state.rootSlice.allUsersLikedBlogs);
+  const [userLastTenLikedBlogs, setUserLastTenLikedBlogs] = useState([]);
+  const currentSessionUser = useSelector((state) => state.auth.currentSessionUser)
+  useEffect(() => {
+      const fetchLikeBlogs = async () => {
+        try {
+          const response = await fetch(
+            "http://localhost:3333/blog/get_likes",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ user_id: currentSessionUser.id }),
+              credentials: "include",
+            }
+          );
   
-  if (
-    allUsersLikedBlogs[currentSessionUser] &&
-    allUsersLikedBlogs[currentSessionUser].length <= 10
-  ) {
-    userLastTenLikedBlogs = allUsersLikedBlogs[currentSessionUser];
-  } else if (allUsersLikedBlogs[currentSessionUser]) {
-    userLastTenLikedBlogs = allUsersLikedBlogs[currentSessionUser].slice(-10);
-  }
+          const data = await response.json();
+          if (response.ok) {
+            if (userLastTenLikedBlogs>10) {
+              setUserLastTenLikedBlogs(userLastTenLikedBlogs.slice(-10));
+            }else{
+            setUserLastTenLikedBlogs(data);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching blogs:", error);
+        }
+      };
+  
+      fetchLikeBlogs();
+    }, [currentSessionUser]);
 
   return (
     <div className="w-2/3 mx-auto bg-white p-6 rounded-xl shadow-lg">

@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import DisplayBlogsOnHome from "../components/DisplayBlogsOnHome";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 export default function Home() {
   const [allPublicBlogs, setAllPublicBlogs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [userFavourites, setUserFavourites] = useState([]);
-  const [userLikedBlogs, setUserLikedBlogs] = useState([]);
-  const currentSessionUser = useSelector(
-    (state) => state.auth.currentSessionUser
-  );
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
@@ -29,59 +26,7 @@ export default function Home() {
     };
     fetchBlogs();
   }, [])
-  
 
-  useEffect(() => {
-    const getUserFavourites = async () => {
-      if (!currentSessionUser?.id) {
-        return;
-      }
-
-      const payload = { user_id: currentSessionUser.id };
-      try {
-        const response = await fetch(
-          "http://localhost:3333/blog/get_user_favourite_blogs",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(payload),
-          }
-        );
-        const data = await response.json();
-        if (response.ok) {
-          setUserFavourites(data);
-        }
-      } catch (error) {
-        console.error("Full error:", error);
-      }
-    };
-    getUserFavourites();
-    // const getUserLikedBlogs = async () => {
-    //   try {
-    //     const response = await fetch(
-    //       "http://localhost:3333/blog/get_user_liked_blogs",
-    //       {
-    //         method: "POST",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify({ user_id: currentSessionUser.id }),
-    //         credentials: "include",
-    //       }
-    //     );
-    //     const data = await response.json();
-    //     if (response.ok) {
-    //       userLikedBlogs = data;
-    //     }
-    //   } catch (error) {
-    //     console.error("Error fetching user liked blogs:", error);
-    //   }
-    // }
-    // getUserLikedBlogs();
-  }, [currentSessionUser]);
   
   return (
     <div className="text-center mt-10 px-4">
@@ -125,8 +70,6 @@ export default function Home() {
                   <DisplayBlogsOnHome
                     blog={blog}
                     key={blog.id || index}
-                    userFavourites={userFavourites}
-                    userLikedBlogs={userLikedBlogs}
                   />
                 ))}
             </div>
@@ -148,8 +91,6 @@ export default function Home() {
                 <DisplayBlogsOnHome
                   blog={blog}
                   key={blog.id || index}
-                  userFavourites={userFavourites}
-                  userLikedBlogs={userLikedBlogs}
                 />
               ))}
             </div>

@@ -6,8 +6,8 @@ const initialState = {
   
     blogs: [],
     singleDetailedBlog: {},
-    allUsersFavouriteBlogs: JSON.parse(localStorage.getItem("allUsersFavouriteBlogs")) || {},
-    allUsersLikedBlogs: JSON.parse(localStorage.getItem("allUsersLikedBlogs")) || {},
+    userFavouriteBlogs: [],
+    usersLikedBlogs: [],
 };
 
 const rootSlice = createSlice({
@@ -21,13 +21,11 @@ const rootSlice = createSlice({
     setSingleDetailedBlog: (state, action) => {
       state.singleDetailedBlog = action.payload;
     },
-    setAllUsersFavouriteBlogs: (state, action) => {
-      state.allUsersFavouriteBlogs = action.payload;
-      localStorage.setItem("allUsersFavouriteBlogs", JSON.stringify(state.allUsersFavouriteBlogs));
+    setUserFavouriteBlogs: (state, action) => {
+      state.userFavouriteBlogs = action.payload;
     },
-    setAllUsersLikedBlogs: (state, action) => {
+    setUsersLikedBlogs: (state, action) => {
       state.allUsersLikedBlogs = action.payload;
-      localStorage.setItem("allUsersLikedBlogs", JSON.stringify(state.allUsersLikedBlogs));
     },
   },
 });
@@ -35,8 +33,8 @@ const rootSlice = createSlice({
 export const {
   setBlogs,
   setSingleDetailedBlog,
-  setAllUsersFavouriteBlogs,
-  setAllUsersLikedBlogs,
+  setUserFavouriteBlogs,
+  setUsersLikedBlogs,
 } = rootSlice.actions;
 
 

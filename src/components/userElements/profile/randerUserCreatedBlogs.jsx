@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactTimeAgo from "react-time-ago";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setAllUsersFavouriteBlogs,
-  setAllUsersLikedBlogs,
-  setBlogs,
-} from "../../../redux/rootSlice";
 
 export default function RanderUserCreatedBlogs({
   blog,

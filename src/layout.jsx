@@ -1,12 +1,13 @@
 import { Outlet } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { login} from "./redux/authSlice";
+import { login } from "./redux/authSlice";
 
 export default function Layout() {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
 
   const checkLoggedIn = async () => {
     try {
@@ -21,16 +22,21 @@ export default function Layout() {
       const data = await response.json();
       if (response.ok) {
         dispatch(login(data));
-      } else {
-        throw new Error(data.errors[0].message);
       }
     } catch (error) {
-      console.log(error.message);
+      console.log("Not logged in");
+    } finally {
+      setLoading(false);
     }
-  } 
+  };
+
   useEffect(() => {
     checkLoggedIn();
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // Prevent page from rendering before auth check
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
