@@ -38,7 +38,7 @@ function DisplayBlogsOnHome({ blog }) {
       </div>
 
       <p className="text-gray-600 mt-3">{blog.content.substring(0, 100)}...</p>
-      
+
       <Link
         to={`/${blog.id}`} // Dynamically use the blog.id for the URL
         className="text-blue-500 mt-2 font-medium hover:underline"
@@ -47,7 +47,13 @@ function DisplayBlogsOnHome({ blog }) {
         Show Details
       </Link>
 
-        
+      {/* <button
+        onClick={() => navigate(`/${blog.id}`)}
+        className="text-blue-500 mt-2 font-medium hover:underline"
+      >
+        Show Details
+      </button> */}
+
       <div className="flex justify-between text-sm text-gray-500 mt-4">
         <span>{new Date(blog.createdAt).toLocaleString()}</span>
         <span>
@@ -55,7 +61,6 @@ function DisplayBlogsOnHome({ blog }) {
         </span>
         <span>⏳ {blog.readTime} mins read</span>
       </div>
-
     </div>
   );
 }
