@@ -33,18 +33,21 @@ export default function RanderUserCreatedBlogs({
   let currentSessionUser = useSelector(
     (state) => state.auth.currentSessionUser
   );
-  
+
   useEffect(() => {
     const updateBlogStatus = async () => {
       try {
-        const response = await fetch("http://localhost:3333/blog/update_blog_status", {
-          method: "POST",
-          headers: {
-            'Content-Type': "application/json",
-          },
-          body: JSON.stringify({id:blog.id,status: status }),
-          credentials: "include",
-        });
+        const response = await fetch(
+          "http://54.80.179.248:3333/blog/update_blog_status",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: blog.id, status: status }),
+            credentials: "include",
+          }
+        );
 
         const data = await response.json();
         if (!response.ok) {

@@ -9,37 +9,37 @@ function DetailedBlog() {
   const singleDetailedBlog = useSelector(
     (state) => state.rootSlice.singleDetailedBlog
   );
-  
+
   const [isFavourite, setIsFavourite] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   useEffect(() => {
-      const fetchBlogs = async () => {
-        try {
-          const response = await fetch(
-            "http://localhost:3333/blog/get_blog_by_blog_id",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ id: singleDetailedBlog.id }),
-              credentials: "include",
-            }
-          );
-  
-          const data = await response.json();
-          if (response.ok) {
-            setSingleDetailedBlog(data);
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch(
+          "http://54.80.179.248:3333/blog/get_blog_by_blog_id",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id: singleDetailedBlog.id }),
+            credentials: "include",
           }
-        } catch (error) {
-          console.error("Error fetching blogs:", error);
+        );
+
+        const data = await response.json();
+        if (response.ok) {
+          setSingleDetailedBlog(data);
         }
-      };
-  
-      fetchBlogs();
-    }, []);
-    console.log(singleDetailedBlog);
-    
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
+  console.log(singleDetailedBlog);
+
   const {
     id,
     title,
@@ -51,7 +51,7 @@ function DetailedBlog() {
     username,
     createdAt,
   } = singleDetailedBlog;
-  const [currentLikes,setCurrentLikes] = useState(likeCount);
+  const [currentLikes, setCurrentLikes] = useState(likeCount);
   const currentSessionUser = useSelector(
     (state) => state.auth.currentSessionUser
   );
@@ -61,14 +61,13 @@ function DetailedBlog() {
     );
   }
 
-  
   const toggleFavourite = async () => {
     if (!currentSessionUser.id) return;
 
     try {
       const endpoint = !isFavourite
-        ? "http://localhost:3333/blog/add_to_favourite"
-        : "http://localhost:3333/blog/remove_from_favourite";
+        ? "http://54.80.179.248:3333/blog/add_to_favourite"
+        : "http://54.80.179.248:3333/blog/remove_from_favourite";
       setIsFavourite(!isFavourite);
 
       const response = await fetch(endpoint, {
@@ -94,14 +93,13 @@ function DetailedBlog() {
       console.log(error.message);
     }
   };
-  
+
   const toggleLike = async () => {
-    
     if (!currentSessionUser.id) return;
 
     try {
       const responseOne = await fetch(
-        "http://localhost:3333/blog/update_like",
+        "http://54.80.179.248:3333/blog/update_like",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -114,10 +112,12 @@ function DetailedBlog() {
       );
 
       if (responseOne.ok) {
-        isLiked ? setCurrentLikes(currentLikes - 1) : setCurrentLikes(currentLikes + 1);
+        isLiked
+          ? setCurrentLikes(currentLikes - 1)
+          : setCurrentLikes(currentLikes + 1);
         const endpoint = !isLiked
-          ? "http://localhost:3333/blog/add_to_like"
-          : "http://localhost:3333/blog/remove_from_like";
+          ? "http://54.80.179.248:3333/blog/add_to_like"
+          : "http://54.80.179.248:3333/blog/remove_from_like";
         setIsLiked(!isLiked);
 
         const response = await fetch(endpoint, {
@@ -154,7 +154,7 @@ function DetailedBlog() {
       if (!currentSessionUser.id) return;
       try {
         const response = await fetch(
-          "http://localhost:3333/blog/get_user_favourite_blogs",
+          "http://54.80.179.248:3333/blog/get_user_favourite_blogs",
           {
             method: "POST",
             headers: {
@@ -182,7 +182,7 @@ function DetailedBlog() {
       if (!currentSessionUser.id) return;
       try {
         const response = await fetch(
-          "http://localhost:3333/blog/get_user_liked_blogs",
+          "http://54.80.179.248:3333/blog/get_user_liked_blogs",
           {
             method: "POST",
             headers: {
@@ -208,7 +208,7 @@ function DetailedBlog() {
     getUserLikes();
   }, [currentSessionUser]);
 
-  console.log(isLiked,isFavourite);
+  console.log(isLiked, isFavourite);
   return (
     <div className="container mx-auto px-6 py-12">
       <Link

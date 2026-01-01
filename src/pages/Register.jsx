@@ -39,7 +39,7 @@ export default function Register() {
       username: curUsername,
     };
     try {
-      const response = await fetch("http://localhost:3333/blog/register", {
+      const response = await fetch("http://54.80.179.248:3333/blog/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

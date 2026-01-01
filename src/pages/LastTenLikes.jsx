@@ -1,41 +1,42 @@
-
 import { useDispatch, useSelector } from "react-redux";
 import RanderLiked from "../components/userElements/lastTenLikes/randerLiked";
 import { useEffect, useState } from "react";
 export default function LastTenLikes() {
-  const dispatch= useDispatch();
+  const dispatch = useDispatch();
   const [userLastTenLikedBlogs, setUserLastTenLikedBlogs] = useState([]);
-  const currentSessionUser = useSelector((state) => state.auth.currentSessionUser)
+  const currentSessionUser = useSelector(
+    (state) => state.auth.currentSessionUser
+  );
   useEffect(() => {
-      const fetchLikeBlogs = async () => {
-        try {
-          const response = await fetch(
-            "http://localhost:3333/blog/get_likes",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ user_id: currentSessionUser.id }),
-              credentials: "include",
-            }
-          );
-  
-          const data = await response.json();
-          if (response.ok) {
-            if (userLastTenLikedBlogs>10) {
-              setUserLastTenLikedBlogs(userLastTenLikedBlogs.slice(-10));
-            }else{
-            setUserLastTenLikedBlogs(data);
-            }
+    const fetchLikeBlogs = async () => {
+      try {
+        const response = await fetch(
+          "http://54.80.179.248:3333/blog/get_likes",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ user_id: currentSessionUser.id }),
+            credentials: "include",
           }
-        } catch (error) {
-          console.error("Error fetching blogs:", error);
+        );
+
+        const data = await response.json();
+        if (response.ok) {
+          if (userLastTenLikedBlogs > 10) {
+            setUserLastTenLikedBlogs(userLastTenLikedBlogs.slice(-10));
+          } else {
+            setUserLastTenLikedBlogs(data);
+          }
         }
-      };
-  
-      fetchLikeBlogs();
-    }, [currentSessionUser]);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      }
+    };
+
+    fetchLikeBlogs();
+  }, [currentSessionUser]);
 
   return (
     <div className="w-2/3 mx-auto bg-white p-6 rounded-xl shadow-lg">

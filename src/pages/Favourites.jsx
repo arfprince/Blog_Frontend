@@ -15,7 +15,7 @@ export default function Favourites() {
       if (!currentSessionUser.id) return;
       try {
         const response = await fetch(
-          "http://localhost:3333/blog/get_favourites",
+          "http://54.80.179.248:3333/blog/get_favourites",
           {
             method: "POST",
             headers: {
@@ -44,7 +44,7 @@ export default function Favourites() {
       if (removeFavourite) {
         try {
           const response = await fetch(
-            "http://localhost:3333/blog/remove_from_favourite",
+            "http://54.80.179.248:3333/blog/remove_from_favourite",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -73,7 +73,7 @@ export default function Favourites() {
       if (!currentSessionUser.id) return;
       try {
         const response = await fetch(
-          "http://localhost:3333/blog/get_favourites",
+          "http://54.80.179.248:3333/blog/get_favourites",
           {
             method: "POST",
             headers: {
@@ -96,7 +96,7 @@ export default function Favourites() {
 
     getUserFavourites();
   }, [removeFavourite, deletedFavBlogId]);
-  
+
   return (
     <div className="w-2/3 mx-auto bg-white p-6 rounded-xl shadow-lg">
       <h2 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">

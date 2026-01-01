@@ -36,13 +36,13 @@ export default function Login() {
       remember_me: true,
     };
     try {
-      const response = await fetch("http://localhost:3333/blog/login", {
+      const response = await fetch("http://54.80.179.248:3333/blog/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-        credentials: "include"
+        credentials: "include",
       });
 
       const data = await response.json();

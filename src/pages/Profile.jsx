@@ -10,7 +10,7 @@ function Profile() {
   const [saveEditedBlog, setSaveEditedBlog] = useState(false);
   const [userBlogs, setUserBlogs] = useState([]);
   const navigate = useNavigate();
-  
+
   const currentSessionUser = useSelector(
     (state) => state.auth.currentSessionUser
   );
@@ -23,28 +23,34 @@ function Profile() {
       console.log(editedBlog);
       const updateBlog = async () => {
         try {
-          const response = await fetch("http://localhost:3333/blog/update_blog",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({id: editedBlog.id, title: editedBlog.title, content: editedBlog.content, imageUrl: editedBlog.imageUrl}),
-            credentials: "include",
-          });
-  
+          const response = await fetch(
+            "http://54.80.179.248:3333/blog/update_blog",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                id: editedBlog.id,
+                title: editedBlog.title,
+                content: editedBlog.content,
+                imageUrl: editedBlog.imageUrl,
+              }),
+              credentials: "include",
+            }
+          );
+
           const data = await response.json();
-          if(response.ok){
-            const updatedUserBlogs = userBlogs.map(blog => blog.id === editedBlog.id? editedBlog : blog);
+          if (response.ok) {
+            const updatedUserBlogs = userBlogs.map((blog) =>
+              blog.id === editedBlog.id ? editedBlog : blog
+            );
             setUserBlogs(updatedUserBlogs);
-          }
-          else{
+          } else {
             throw new Error(data.error);
           }
-        } catch (error) {
-          
-        }
-      }
+        } catch (error) {}
+      };
       updateBlog();
       setSaveEditedBlog(false);
       setEditedBlog({});
@@ -56,7 +62,7 @@ function Profile() {
       const deleteBlog = async () => {
         try {
           const response = await fetch(
-            "http://localhost:3333/blog/delete_blog",
+            "http://54.80.179.248:3333/blog/delete_blog",
             {
               method: "POST",
               headers: {
@@ -68,12 +74,14 @@ function Profile() {
           );
 
           const data = await response.json();
-          
+
           if (response.ok) {
             alert(data.message);
-            const updatedUserBlogs = userBlogs.filter(blog => blog.id !== idForDeleteBlog);
+            const updatedUserBlogs = userBlogs.filter(
+              (blog) => blog.id !== idForDeleteBlog
+            );
             setUserBlogs(updatedUserBlogs);
-          }else{
+          } else {
             throw new Error(data.error);
           }
         } catch (error) {
@@ -90,7 +98,7 @@ function Profile() {
     const fetchBlogs = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3333/blog/get_blog_by_user_id",
+          "http://54.80.179.248:3333/blog/get_blog_by_user_id",
           {
             method: "POST",
             headers: {

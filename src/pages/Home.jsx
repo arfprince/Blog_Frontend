@@ -10,14 +10,17 @@ export default function Home() {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await fetch("http://localhost:3333/blog/get_blogs", {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-          credentials: "include",
-        });
-  
+        const response = await fetch(
+          "http://54.80.179.248:3333/blog/get_blogs",
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+            },
+            credentials: "include",
+          }
+        );
+
         const data = await response.json();
         if (response.ok) {
           setAllPublicBlogs(data);
@@ -25,9 +28,8 @@ export default function Home() {
       } catch (error) {}
     };
     fetchBlogs();
-  }, [])
+  }, []);
 
-  
   return (
     <div className="text-center mt-10 px-4">
       {/* Header */}
@@ -67,10 +69,7 @@ export default function Home() {
               {allPublicBlogs
                 .filter((blog) => blog.title.toLowerCase().includes(searchTerm))
                 .map((blog, index) => (
-                  <DisplayBlogsOnHome
-                    blog={blog}
-                    key={blog.id || index}
-                  />
+                  <DisplayBlogsOnHome blog={blog} key={blog.id || index} />
                 ))}
             </div>
           )}
@@ -88,10 +87,7 @@ export default function Home() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {allPublicBlogs.map((blog, index) => (
-                <DisplayBlogsOnHome
-                  blog={blog}
-                  key={blog.id || index}
-                />
+                <DisplayBlogsOnHome blog={blog} key={blog.id || index} />
               ))}
             </div>
           )}

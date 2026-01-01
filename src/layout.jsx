@@ -11,13 +11,16 @@ export default function Layout() {
 
   const checkLoggedIn = async () => {
     try {
-      const response = await fetch("http://localhost:3333/blog/is-logged-user", {
-        method: "GET",
-        headers: {
-          "Accept": "application/json",
-        },
-        credentials: "include"
-      });
+      const response = await fetch(
+        "http://54.80.179.248:3333/blog/is-logged-user",
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {

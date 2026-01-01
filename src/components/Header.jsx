@@ -8,15 +8,15 @@ export default function Header() {
   const dispatch = useDispatch();
   const handleLogOutClick = async () => {
     try {
-      const response = await fetch('http://localhost:3333/blog/logout', {
+      const response = await fetch("http://54.80.179.248:3333/blog/logout", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
       });
       const data = await response.json();
-      
+
       if (response.ok) {
         dispatch(logout());
         alert("Logout successful!");

@@ -104,14 +104,17 @@ export default function CreateNewBlog() {
     };
 
     try {
-      const response = await fetch("http://localhost:3333/blog/create_blog", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-        credentials: "include",
-      });
+      const response = await fetch(
+        "http://54.80.179.248:3333/blog/create_blog",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 
